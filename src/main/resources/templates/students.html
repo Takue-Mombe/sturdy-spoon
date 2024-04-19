@@ -1,0 +1,97 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+</head>
+<body>
+<!-- Table to display Students -->
+<table class="table mt-3">
+    <thead>
+    <tr>
+        <th>Registration Number</th>
+        <th>First Name</th>
+        <th>Last Name</th>
+        <th>Programme</th>
+        <th>Year Enrolled</th>
+        <th>Actions</th>
+    </tr>
+    </thead>
+    <tbody>
+    <!-- Iterate over students -->
+    <tr th:each="student : ${students}" th:id="'studentRow-' + ${student.regNumber}">
+        <td><span th:text="${student.regNumber}"></span></td>
+        <td><span th:text="${student.firstName}"></span></td>
+        <td><span th:text="${student.lastName}"></span></td>
+        <td><span th:text="${student.programme.programmeName}"></span></td>
+        <td><span th:text="${student.yearEnrolled}"></span></td>
+        <td>
+            <!-- Edit Button -->
+            <button type="button" class="btn btn-primary" onclick="editStudentModal('${student.regNumber}')">Edit</button>
+        </td>
+    </tr>
+    </tbody>
+</table>
+
+<!-- Edit Student Modal -->
+<div class="modal fade" id="editStudentModal" tabindex="-1" role="dialog" aria-labelledby="editStudentModalLabel" aria-hidden="true">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="editStudentModalLabel">Edit Student</h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body">
+                <!-- Form for editing student details -->
+                <form id="editStudentForm" action="/students/edit" method="post">
+                    <div class="form-group">
+                        <label for="editRegNumber">Registration Number:</label>
+                        <input type="text" class="form-control" id="editRegNumber" name="regNumber" readonly>
+                    </div>
+                    <div class="form-group">
+                        <label for="editFirstName">First Name:</label>
+                        <input type="text" class="form-control" id="editFirstName" name="firstName" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="editLastName">Last Name:</label>
+                        <input type="text" class="form-control" id="editLastName" name="lastName" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="editProgramme">Programme:</label>
+                        <input type="text" class="form-control" id="editProgramme" name="programmeName" readonly>
+                    </div>
+                    <div class="form-group">
+                        <label for="editYearEnrolled">Year Enrolled:</label>
+                        <input type="text" class="form-control" id="editYearEnrolled" name="yearEnrolled" required>
+                    </div>
+                    <button type="submit" class="btn btn-primary">Save Changes</button>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+    // Function to populate edit student modal with student details
+    function editStudentModal(regNumber) {
+        var studentRow = $('#studentRow-' + regNumber);
+        var firstName = studentRow.find('td:nth-child(2)').text();
+        var lastName = studentRow.find('td:nth-child(3)').text();
+        var programme = studentRow.find('td:nth-child(4)').text();
+        var yearEnrolled = studentRow.find('td:nth-child(5)').text();
+
+        $('#editRegNumber').val(regNumber);
+        $('#editFirstName').val(firstName);
+        $('#editLastName').val(lastName);
+        $('#editProgramme').val(programme);
+        $('#editYearEnrolled').val(yearEnrolled);
+
+        $('#editStudentModal').modal('show');
+    }
+</script>
+
+
+</body>
+</html>

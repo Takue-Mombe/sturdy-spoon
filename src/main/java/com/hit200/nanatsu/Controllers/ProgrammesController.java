@@ -20,7 +20,7 @@ public class ProgrammesController {
     public String getAllProgrammes(Model model) {
         List<Programmes> programmes = programmesService.getAllProgrammes();
         model.addAttribute("programmes", programmes);
-        return "/pages/tables"; // Thymeleaf template name to display programmes
+        return "programmes"; // Thymeleaf template name to display programmes
     }
 
     // GET request to display the form for adding a new programme

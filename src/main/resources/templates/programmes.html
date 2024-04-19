@@ -1,0 +1,125 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <title>Programmes</title>
+    <!-- Add necessary CSS and JS files -->
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.16.0/umd/popper.min.js"></script>
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+</head>
+<body>
+
+<div class="container">
+    <h2>Programmes</h2>
+    <!-- Add Programme Button -->
+    <button type="button" class="btn btn-primary" data-toggle="modal" data-target="#addProgrammeModal">Add Programme</button>
+    <!-- Table to display Programmes -->
+    <table class="table mt-3">
+        <thead>
+        <tr>
+            <th>Programme ID</th>
+            <th>Programme Name</th>
+            <th>School</th>
+            <th>Actions</th>
+        </tr>
+        </thead>
+        <tbody>
+        <!-- Iterate over programmes -->
+        <tr th:each="programme : ${programmes}" th:id="'programmeRow-' + ${programme.programmeId}">
+            <td><span th:text="${programme.programmeId}"></span></td>
+            <td><span th:text="${programme.programmeName}" id="programmeName-${programme.programmeId}"></span></td>
+            <td><span th:text="${programme.school}" id="school-${programme.programmeId}"></span></td>
+            <td>
+                <!-- Edit Button -->
+                <button type="button" class="btn btn-primary" onclick="editProgramme('${programme.programmeId}', '${programme.programmeName}', '${programme.school}')">Edit</button>
+
+            </td>
+        </tr>
+        </tbody>
+    </table>
+</div>
+
+<!-- Add Programme Modal -->
+<div class="modal fade" id="addProgrammeModal" tabindex="-1" role="dialog" aria-labelledby="addProgrammeModalLabel" aria-hidden="true">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="addProgrammeModalLabel">Add Programme</h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body">
+                <!-- Form for adding a new programme -->
+                <form action="/programmes/add" method="post">
+                    <div class="form-group">
+                        <label for="programmeId">Programme ID:</label>
+                        <input type="text" class="form-control" id="programmeId" name="programmeId" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="programmeName">Programme Name:</label>
+                        <input type="text" class="form-control" id="programmeName" name="programmeName" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="school">School:</label>
+                        <select class="form-control" id="school" name="school">
+                            <!-- Dropdown options -->
+                            <option value="SCHOOL OF BUSINESS AND MANAGEMENT SCIENCES">SCHOOL OF BUSINESS AND MANAGEMENT SCIENCES</option>
+                            <option value="SCHOOL OF ENGINEERING AND TECHNOLOGY">SCHOOL OF ENGINEERING AND TECHNOLOGY</option>
+                            <option value="SCHOOL OF INDUSTRIAL SCIENCES AND TECHNOLOGY">SCHOOL OF INDUSTRIAL SCIENCES AND TECHNOLOGY</option>
+                            <option value="SCHOOL OF INFORMATION SCIENCE AND TECHNOLOGY">SCHOOL OF INFORMATION SCIENCE AND TECHNOLOGY</option>
+                        </select>
+                    </div>
+                    <button type="submit" class="btn btn-primary">Add</button>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Edit Programme Modal -->
+<div class="modal fade" id="editProgrammeModal" tabindex="-1" role="dialog" aria-labelledby="editProgrammeModalLabel" aria-hidden="true">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="editProgrammeModalLabel">Edit Programme</h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body">
+                <!-- Form for editing programme details -->
+                <form id="editProgrammeForm" method="post">
+                    <div class="form-group">
+                        <label for="editProgrammeId">Programme ID:</label>
+                        <input type="text" class="form-control" id="editProgrammeId" name="programmeId" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="editProgrammeName">Programme Name:</label>
+                        <input type="text" class="form-control" id="editProgrammeName" name="programmeName" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="editSchool">School:</label>
+                        <!-- Display the selected school as plain text -->
+                        <input type="text" class="form-control" id="editSchool" name="school" required>
+                    </div>
+                    <button type="submit" class="btn btn-primary">Save Changes</button>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+    // Function to populate edit programme modal with programme details
+    function editProgramme(programmeId, programmeName, school) {
+        document.getElementById("editProgrammeId").value = programmeId;
+        document.getElementById("editProgrammeName").value = programmeName;
+        document.getElementById("editSchool").value = school;
+        $('#editProgrammeModal').modal('show');
+    }
+</script>
+
+</body>
+</html>
