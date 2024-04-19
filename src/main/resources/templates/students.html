@@ -1,37 +1,92 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
 <head>
     <meta charset="UTF-8">
-    <title>Title</title>
+    <title>Students Management</title>
+    <!-- Bootstrap CSS -->
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
 </head>
 <body>
-<!-- Table to display Students -->
-<table class="table mt-3">
-    <thead>
-    <tr>
-        <th>Registration Number</th>
-        <th>First Name</th>
-        <th>Last Name</th>
-        <th>Programme</th>
-        <th>Year Enrolled</th>
-        <th>Actions</th>
-    </tr>
-    </thead>
-    <tbody>
-    <!-- Iterate over students -->
-    <tr th:each="student : ${students}" th:id="'studentRow-' + ${student.regNumber}">
-        <td><span th:text="${student.regNumber}"></span></td>
-        <td><span th:text="${student.firstName}"></span></td>
-        <td><span th:text="${student.lastName}"></span></td>
-        <td><span th:text="${student.programme.programmeName}"></span></td>
-        <td><span th:text="${student.yearEnrolled}"></span></td>
-        <td>
-            <!-- Edit Button -->
-            <button type="button" class="btn btn-primary" onclick="editStudentModal('${student.regNumber}')">Edit</button>
-        </td>
-    </tr>
-    </tbody>
-</table>
+
+<div class="container mt-4">
+    <h2>Students Management</h2>
+
+    <!-- Add Student Button -->
+    <button type="button" class="btn btn-primary mb-2" data-toggle="modal" data-target="#addStudentModal">Add Student</button>
+
+    <!-- Students Table -->
+    <table class="table">
+        <thead>
+        <tr>
+            <th>Registration Number</th>
+            <th>First Name</th>
+            <th>Last Name</th>
+            <th>Programme</th>
+            <th>Year Enrolled</th>
+            <th>Actions</th>
+        </tr>
+        </thead>
+        <tbody>
+        <!-- Iterate over students -->
+        <tr th:each="student : ${students}" th:id="'studentRow-' + ${student.regNumber}">
+            <td th:text="${student.regNumber}"></td>
+            <td th:text="${student.firstName}"></td>
+            <td th:text="${student.lastName}"></td>
+            <td th:text="${student.programme.programmeName}"></td>
+            <td th:text="${student.yearEnrolled}"></td>
+            <td>
+                <!-- Edit Button -->
+                <button type="button" class="btn btn-primary" onclick="editStudentModal('${student.regNumber}', '${student.firstName}', '${student.lastName}', '${student.programme.programmeName}', '${student.yearEnrolled}')">Edit</button>
+            </td>
+        </tr>
+        </tbody>
+    </table>
+</div>
+
+<!-- Add Student Modal -->
+    <div class="modal fade" id="addStudentModal" tabindex="-1" role="dialog" aria-labelledby="addStudentModalLabel" aria-hidden="true">
+        <div class="modal-dialog" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="addStudentModalLabel">Add Student</h5>
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+                </div>
+                <div class="modal-body">
+                    <!-- Form for adding a new student -->
+                    <form action="/students/add" method="post">
+                        <div class="form-group">
+                            <label for="addRegNumber">Registration Number:</label>
+                            <input type="text" class="form-control" id="addRegNumber" name="regNumber" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="addFirstName">First Name:</label>
+                            <input type="text" class="form-control" id="addFirstName" name="firstName" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="addLastName">Last Name:</label>
+                            <input type="text" class="form-control" id="addLastName" name="lastName" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="addProgramme">Programme:</label>
+                            <select class="form-control" id="addProgramme" name="programme" required>
+                                <!-- Iterate over program IDs -->
+                                <option th:each="programme : ${programmes}" th:value="${programme.programmeId}" th:text="${programme.programmeName}"></option>
+                            </select>
+                        </div>
+
+                        <div class="form-group">
+                            <label for="addYearEnrolled">Year Enrolled:</label>
+                            <input type="text" class="form-control" id="addYearEnrolled" name="yearEnrolled" required>
+                        </div>
+                        <button type="submit" class="btn btn-primary">Add</button>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
 
 <!-- Edit Student Modal -->
 <div class="modal fade" id="editStudentModal" tabindex="-1" role="dialog" aria-labelledby="editStudentModalLabel" aria-hidden="true">
@@ -45,7 +100,7 @@
             </div>
             <div class="modal-body">
                 <!-- Form for editing student details -->
-                <form id="editStudentForm" action="/students/edit" method="post">
+                <form action="/students/edit" method="post">
                     <div class="form-group">
                         <label for="editRegNumber">Registration Number:</label>
                         <input type="text" class="form-control" id="editRegNumber" name="regNumber" readonly>
@@ -60,7 +115,10 @@
                     </div>
                     <div class="form-group">
                         <label for="editProgramme">Programme:</label>
-                        <input type="text" class="form-control" id="editProgramme" name="programmeName" readonly>
+                        <select class="form-control" id="editProgramme" name="programme" required>
+                            <!-- Iterate over program IDs -->
+                            <option th:each="programme : ${programmes}" th:value="${programme.programmeId}" th:text="${programme.programmeName}"></option>
+                        </select>
                     </div>
                     <div class="form-group">
                         <label for="editYearEnrolled">Year Enrolled:</label>
@@ -72,26 +130,22 @@
         </div>
     </div>
 </div>
+<!-- Bootstrap JS -->
+<script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/popper.js@1.16.1/dist/umd/popper.min.js"></script>
+<script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
 
 <script>
     // Function to populate edit student modal with student details
-    function editStudentModal(regNumber) {
-        var studentRow = $('#studentRow-' + regNumber);
-        var firstName = studentRow.find('td:nth-child(2)').text();
-        var lastName = studentRow.find('td:nth-child(3)').text();
-        var programme = studentRow.find('td:nth-child(4)').text();
-        var yearEnrolled = studentRow.find('td:nth-child(5)').text();
-
-        $('#editRegNumber').val(regNumber);
-        $('#editFirstName').val(firstName);
-        $('#editLastName').val(lastName);
-        $('#editProgramme').val(programme);
-        $('#editYearEnrolled').val(yearEnrolled);
-
+    function editStudentModal(regNumber, firstName, lastName, programmeName, yearEnrolled) {
+        document.getElementById("editRegNumber").value = regNumber;
+        document.getElementById("editFirstName").value = firstName;
+        document.getElementById("editLastName").value = lastName;
+        document.getElementById("editProgramme").value = programmeName;
+        document.getElementById("editYearEnrolled").value = yearEnrolled;
         $('#editStudentModal').modal('show');
     }
 </script>
-
 
 </body>
 </html>

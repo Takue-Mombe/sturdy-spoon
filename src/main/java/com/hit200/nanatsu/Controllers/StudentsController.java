@@ -1,6 +1,8 @@
 package com.hit200.nanatsu.Controllers;
 
+import com.hit200.nanatsu.Modelling.Programmes;
 import com.hit200.nanatsu.Modelling.Students;
+import com.hit200.nanatsu.Services.ProgrammesService;
 import com.hit200.nanatsu.Services.StudentsService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
@@ -14,12 +16,15 @@ public class StudentsController {
 
     @Autowired
     private StudentsService studentsService;
+    @Autowired private ProgrammesService programmesService;
 
     // GET request to fetch all students
     @GetMapping
     public String getAllStudents(Model model) {
         List<Students> students = studentsService.getAllStudents();
+        List<Programmes> programmes = programmesService.getAllProgrammes();
         model.addAttribute("students", students);
+        model.addAttribute("programmes",programmes);
         return "students"; // Thymeleaf template name to display students
     }
 

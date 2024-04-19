@@ -1,0 +1,186 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <title>Lecturers</title>
+    <!-- Bootstrap CSS CDN -->
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+</head>
+<body>
+
+<div class="container mt-5">
+    <!-- Button trigger modal for adding a new lecturer -->
+    <button type="button" class="btn btn-primary mb-3" data-toggle="modal" data-target="#addLecturerModal">
+        Add Lecturer
+    </button>
+
+    <!-- Table to display all lecturers -->
+    <table class="table">
+        <thead>
+        <tr>
+            <th>Lecturer ID</th>
+            <th>First Name</th>
+            <th>Last Name</th>
+            <th>Department</th>
+            <th>Courses</th>
+            <th>Actions</th>
+        </tr>
+        </thead>
+        <tbody>
+        <!-- Iterate over lecturers -->
+        <tr th:each="lecturer : ${lecturers}">
+            <td th:text="${lecturer.lecturer_id}"></td>
+            <td th:text="${lecturer.first_name}"></td>
+            <td th:text="${lecturer.last_name}"></td>
+            <td th:text="${lecturer.department}"></td>
+            <td>
+                <!-- Iterate over courses for this lecturer -->
+                <span th:each="course : ${lecturer.courses}" th:text="${course.courseName}">
+                </span>
+            </td>
+            <td>
+                <!-- Edit Button -->
+                <button type="button" class="btn btn-primary mr-2" data-toggle="modal"
+                        data-target="#editLecturerModal"
+                        onclick="populateEditModal('${lecturer.lecturer_id}', '${lecturer.first_name}', '${lecturer.last_name}', '${lecturer.department}')">
+                    Edit
+                </button>
+                <!-- Delete Button -->
+                <form th:action="@{/lecturers/delete/{lecturerId}(lecturerId=${lecturer.lecturer_id})}" method="post">
+                    <button type="submit" class="btn btn-danger">Delete</button>
+                </form>
+            </td>
+        </tr>
+        </tbody>
+    </table>
+
+</div>
+
+<!-- Add Lecturer Modal -->
+<div class="modal fade" id="addLecturerModal" tabindex="-1" role="dialog" aria-labelledby="addLecturerModalLabel"
+     aria-hidden="true">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="addLecturerModalLabel">Add Lecturer</h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body">
+                <!-- Form for adding a new lecturer -->
+                <form th:action="@{/lecturers/add}" method="post">
+                    <div class="form-group">
+                        <label for="addLecturerId">Lecturer ID:</label>
+                        <input type="text" class="form-control" id="addLecturerId" name="lecturerId" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="addFirstName">First Name:</label>
+                        <input type="text" class="form-control" id="addFirstName" name="firstName" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="addLastName">Last Name:</label>
+                        <input type="text" class="form-control" id="addLastName" name="lastName" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="courseSelect">Select Courses:</label>
+                        <select multiple class="form-control" id="courseSelect" name="courses">
+                            <!-- Populate options with available courses -->
+                            <option th:each="course : ${courses}" th:value="${course.courseId}" th:text="${course.courseName}"></option>
+                            <!-- Add more options dynamically or fetch from server -->
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label for="addDepartment">Department:</label>
+                        <input type="text" class="form-control" id="addDepartment" name="department" required>
+                    </div>
+                    <button type="submit" class="btn btn-primary">Add</button>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+<!-- Modal for editing lecturer information -->
+<div class="modal fade" id="editLecturerModal" tabindex="-1" role="dialog" aria-labelledby="editLecturerModalLabel"
+     aria-hidden="true">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="editLecturerModalLabel">Edit Lecturer Information</h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body">
+                <form id="editLecturerForm">
+                    <input type="hidden" id="lecturerIdInput">
+                    <div class="form-group">
+                        <label for="firstNameInput">First Name</label>
+                        <input type="text" class="form-control" id="firstNameInput">
+                    </div>
+                    <div class="form-group">
+                        <label for="lastNameInput">Last Name</label>
+                        <input type="text" class="form-control" id="lastNameInput">
+                    </div>
+                    <div class="form-group">
+                        <label for="departmentInput">Department</label>
+                        <input type="text" class="form-control" id="departmentInput">
+                    </div>
+                </form>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+                <button type="button" class="btn btn-primary" onclick="saveLecturerChanges()">Save Changes</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+    // Function to populate the modal with lecturer information
+    function populateEditModal(lecturerId, firstName, lastName, department) {
+        document.getElementById('lecturerIdInput').value = lecturerId;
+        document.getElementById('firstNameInput').value = firstName;
+        document.getElementById('lastNameInput').value = lastName;
+        document.getElementById('departmentInput').value = department;
+    }
+
+    // Function to save changes made in the modal
+    function saveLecturerChanges() {
+        // Get the updated information from the modal
+        var lecturerId = document.getElementById('lecturerIdInput').value;
+        var firstName = document.getElementById('firstNameInput').value;
+        var lastName = document.getElementById('lastNameInput').value;
+        var department = document.getElementById('departmentInput').value;
+
+        // Update the table with the new information
+        var row = document.querySelector('tr[data-id="' + lecturerId + '"]');
+        row.querySelector('td:nth-child(2)').innerText = firstName;
+        row.querySelector('td:nth-child(3)').innerText = lastName;
+        row.querySelector('td:nth-child(4)').innerText = department;
+
+        // Close the modal
+        $('#editLecturerModal').modal('hide');
+    }
+
+    // Event listener for edit buttons
+    document.querySelectorAll('.btn-primary').forEach(function (btn) {
+        btn.addEventListener('click', function () {
+            var lecturerId = this.dataset.lecturerId;
+            var firstName = this.dataset.firstName;
+            var lastName = this.dataset.lastName;
+            var department = this.dataset.department;
+            populateEditModal(lecturerId, firstName, lastName, department);
+        });
+    });
+</script>
+
+
+
+
+<!-- Bootstrap JS CDN -->
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.16.0/umd/popper.min.js"></script>
+<script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+
+</body>
+</html>
